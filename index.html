@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="PrismaX Endless Runner - A fun arcade-style side-scrolling game. Jump, dodge, and collect tokens!">
+    <meta name="theme-color" content="#00BCD4">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>PrismaX Runner 🤖</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..900&family=Playfair+Display:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="gameContainer">
+        <canvas id="gameCanvas"></canvas>
+
+        <!-- HUD -->
+        <div id="hud" class="hidden">
+            <div id="scoreDisplay">
+                <div id="scoreIcon">⬡</div>
+                <div id="scoreText">
+                    <span id="scoreLabel">SCORE</span>
+                    <span id="scoreValue">0</span>
+                </div>
+            </div>
+            <div id="comboDisplay" class="hidden">
+                <span id="comboText">x2 COMBO!</span>
+            </div>
+            <button id="pauseBtn" aria-label="Pause Game">❚❚</button>
+        </div>
+
+        <!-- Start Screen -->
+        <div id="startScreen" class="overlay">
+            <div class="overlay-card start-card">
+                <div id="logoContainer" style="margin-bottom: 24px;">
+                    <img id="coinPreview" src="coin.png" alt="P(x) Coin" style="width: 100px; height: 100px; margin: 0 auto 16px; display: block; border-radius: 50%; box-shadow: 0 10px 30px rgba(232, 195, 130, 0.4); animation: robotBob 2s ease-in-out infinite;">
+                    <img src="logo.png" id="gameTitleImg" alt="Prisma(x) Logo" style="max-width: 100%; height: auto; max-height: 80px; margin: 10px auto 4px; display: block;">
+                    <h2 class="game-subtitle-text">PRISMAX RUNNER</h2>
+                </div>
+                <p id="subtitle">Jump • Collect • Survive</p>
+                <button id="playBtn" class="primary-btn">
+                    <span class="btn-icon">▶</span>
+                    <span>PLAY</span>
+                </button>
+                <div id="instructions">
+                    <div class="instruction-item">
+                        <kbd>SPACE</kbd> <span>/ TAP to Jump</span>
+                    </div>
+                    <div class="instruction-item">
+                        <kbd>↓</kbd> <span>/ SWIPE DOWN to Duck</span>
+                    </div>
+                </div>
+                <div id="highScoreStart">
+                    <span>🏆 Best: </span><span id="highScoreStartValue">0</span>
+                </div>
+                <div class="creator-footer">
+                    made by <a href="https://x.com/By_akuya" target="_blank" rel="noopener noreferrer">byakuya</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pause Screen -->
+        <div id="pauseScreen" class="overlay hidden">
+            <div class="overlay-card pause-card">
+                <h2>⏸ Paused</h2>
+                <button id="resumeBtn" class="primary-btn">
+                    <span class="btn-icon">▶</span>
+                    <span>RESUME</span>
+                </button>
+                <button id="restartFromPauseBtn" class="secondary-btn">
+                    <span>↻ RESTART</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Game Over Screen -->
+        <div id="gameOverScreen" class="overlay hidden">
+            <div class="overlay-card gameover-card">
+                <h2 id="gameOverTitle">Game Over!</h2>
+                <div id="finalScoreContainer">
+                    <div class="score-row">
+                        <span class="score-label">Score</span>
+                        <span id="finalScore" class="score-num">0</span>
+                    </div>
+                    <div class="score-row">
+                        <span class="score-label">Tokens</span>
+                        <span id="finalTokens" class="score-num">0</span>
+                    </div>
+                    <div class="score-row">
+                        <span class="score-label">Best Combo</span>
+                        <span id="finalCombo" class="score-num">x0</span>
+                    </div>
+                    <div class="score-row best-row" id="bestScoreRow">
+                        <span class="score-label">🏆 Best</span>
+                        <span id="finalHighScore" class="score-num">0</span>
+                    </div>
+                    <div id="newBestBadge" class="hidden">🎉 NEW BEST!</div>
+                </div>
+                <button id="retryBtn" class="primary-btn">
+                    <span class="btn-icon">↻</span>
+                    <span>PLAY AGAIN</span>
+                </button>
+                <button id="menuBtn" class="secondary-btn">
+                    <span>🏠 MENU</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Controls -->
+        <div id="mobileControls" class="hidden">
+            <button id="duckBtn" class="mobile-btn" aria-label="Duck">⬇</button>
+            <button id="jumpBtn" class="mobile-btn" aria-label="Jump">⬆</button>
+        </div>
+    </div>
+
+    <script src="engine.js"></script>
+    <script src="game.js"></script>
+</body>
+</html>

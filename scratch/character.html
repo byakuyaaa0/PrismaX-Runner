@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+  body { background: #81C784; margin: 0; padding: 20px; text-align: center; font-family: sans-serif; }
+  canvas { background: #A5D6A7; border: 2px solid #333; margin-top: 20px; }
+</style>
+</head>
+<body>
+  <h2>Character Animation Preview</h2>
+  <canvas id="c" width="400" height="200"></canvas>
+  <script>
+    const ctx = document.getElementById('c').getContext('2d');
+    let time = 0;
+
+    function _rrect(ctx,x,y,w,h,r){
+      ctx.beginPath();ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);ctx.quadraticCurveTo(x+w,y,x+w,y+r);
+      ctx.lineTo(x+w,y+h-r);ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);ctx.lineTo(x+r,y+h);
+      ctx.quadraticCurveTo(x,y+h,x,y+h-r);ctx.lineTo(x,y+r);ctx.quadraticCurveTo(x,y,x+r,y);ctx.fill();
+    }
+
+    function drawRobot(ctx, x, y, state, t) {
+      ctx.save();
+      ctx.translate(x, y);
+
+      const cWhite = "#f0f4f8";
+      const cBlue = "#4FC3F7";
+      const cDark = "#2c3e50";
+      const cBlack = "#111";
+      const cGrey = "#95a5a6";
+
+      let headY = -38;
+      let bodyY = -24;
+      let legS = 0;
+      let armS = 0;
+      let bodyTilt = 0;
+
+      if (state === 'run') {
+        const runPhase = t * 15;
+        legS = Math.sin(runPhase);
+        armS = Math.cos(runPhase);
+        bodyY += Math.abs(Math.sin(runPhase*2)) * 2; // bobbing
+        headY += Math.abs(Math.sin(runPhase*2)) * 2;
+        bodyTilt = 0.1;
+      } else if (state === 'jump') {
+        headY = -42;
+        bodyY = -28;
+        legS = -1.5; // legs tucked up
+        armS = -1.5; // arms up
+      } else if (state === 'duck') {
+        headY = -22;
+        bodyY = -12;
+        legS = 0;
+        armS = 0;
+        ctx.scale(1, 0.6); // squash
+      }
+
+      ctx.rotate(bodyTilt);
+
+      // Function to draw leg
+      const drawLeg = (isBack) => {
+        const phase = isBack ? -legS : legS;
+        const lx = isBack ? -6 : 6;
+        ctx.save();
+        ctx.translate(lx, bodyY + 12);
+        if (state === 'jump') {
+          ctx.rotate(isBack ? -0.5 : -0.8);
+        } else {
+          ctx.rotate(phase * 0.6);
+        }
+        
+        // Thigh
+        ctx.fillStyle = cBlue;
+        _rrect(ctx, -3, 0, 6, 10, 2);
+        // Lower leg
+        ctx.fillStyle = cWhite;
+        _rrect(ctx, -2.5, 8, 5, 8, 1);
+        // Ankle
+        ctx.fillStyle = cBlue;
+        _rrect(ctx, -3, 14, 6, 4, 1);
+        // Foot
+        ctx.fillStyle = cDark;
+        if (state === 'duck') {
+          _rrect(ctx, -6, 18, 12, 4, 2);
+        } else {
+          _rrect(ctx, -5, 16, 12, 6, 2);
+        }
+        ctx.restore();
+      };
+
+      const drawArm = (isBack) => {
+        const phase = isBack ? -armS : armS;
+        const ax = isBack ? -14 : 14;
+        ctx.save();
+        ctx.translate(ax, bodyY - 10);
+        if (state === 'jump') {
+          ctx.rotate(isBack ? -2.5 : 2.5); // arms up
+        } else {
+          ctx.rotate(phase * 0.8);
+        }
+        
+        // Shoulder
+        ctx.fillStyle = cBlue;
+        ctx.beginPath(); ctx.arc(0, 0, 5, 0, Math.PI*2); ctx.fill();
+        // Upper arm
+        ctx.fillStyle = cWhite;
+        _rrect(ctx, -3, 2, 6, 10, 2);
+        // Lower arm
+        ctx.fillStyle = cBlue;
+        _rrect(ctx, -3.5, 10, 7, 8, 2);
+        // Hand
+        ctx.fillStyle = cDark;
+        ctx.beginPath(); ctx.arc(0, 18, 4, 0, Math.PI*2); ctx.fill();
+        ctx.restore();
+      };
+
+      // Back Arm & Leg
+      drawArm(true);
+      drawLeg(true);
+
+      // Body (Striped)
+      ctx.save();
+      ctx.translate(0, bodyY);
+      // Main shape
+      ctx.fillStyle = cWhite;
+      _rrect(ctx, -12, -14, 24, 28, 8);
+      // Blue stripes
+      ctx.fillStyle = cBlue;
+      ctx.beginPath(); ctx.rect(-8, -14, 4, 28); ctx.fill();
+      ctx.beginPath(); ctx.rect(4, -14, 4, 28); ctx.fill();
+      // Belly Plate
+      ctx.fillStyle = cDark;
+      _rrect(ctx, -6, 2, 12, 8, 2);
+      // Buttons
+      ctx.fillStyle = "#f1c40f"; ctx.beginPath(); ctx.arc(-2, 6, 1.5, 0, Math.PI*2); ctx.fill();
+      ctx.fillStyle = "#2ecc71"; ctx.beginPath(); ctx.arc(2, 6, 1.5, 0, Math.PI*2); ctx.fill();
+      ctx.restore();
+
+      // Neck
+      ctx.fillStyle = cDark;
+      ctx.fillRect(-3, bodyY - 16, 6, 6);
+
+      // Head
+      ctx.save();
+      ctx.translate(0, headY);
+      ctx.fillStyle = cWhite;
+      _rrect(ctx, -18, -12, 36, 24, 8);
+      
+      // Eyes
+      ctx.fillStyle = cBlack;
+      ctx.beginPath(); ctx.arc(-7, 0, 6, 0, Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.arc(7, 0, 6, 0, Math.PI*2); ctx.fill();
+      // Highlights
+      ctx.fillStyle = cWhite;
+      ctx.beginPath(); ctx.arc(-8, -2, 2, 0, Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.arc(6, -2, 2, 0, Math.PI*2); ctx.fill();
+      
+      // Antenna / Ears (Optional, based on image if it has them. Image says flat wide head, no antenna described in my vision, but old robot had it. I'll add small blue ears)
+      ctx.fillStyle = cBlue;
+      _rrect(ctx, -20, -4, 3, 8, 1);
+      _rrect(ctx, 17, -4, 3, 8, 1);
+      ctx.restore();
+
+      // Front Arm & Leg
+      drawLeg(false);
+      drawArm(false);
+
+      ctx.restore();
+    }
+
+    function loop() {
+      ctx.clearRect(0, 0, 400, 200);
+      time += 0.016;
+
+      ctx.fillStyle = '#333';
+      ctx.font = '16px sans-serif';
+      
+      ctx.fillText('Run', 80, 40);
+      drawRobot(ctx, 100, 150, 'run', time);
+
+      ctx.fillText('Jump', 200, 40);
+      drawRobot(ctx, 200, 150, 'jump', time);
+
+      ctx.fillText('Duck', 300, 40);
+      drawRobot(ctx, 300, 150, 'duck', time);
+
+      requestAnimationFrame(loop);
+    }
+    loop();
+  </script>
+</body>
+</html>
